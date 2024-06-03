@@ -3,7 +3,7 @@
 source regions.sh
 
 for region in "${REGIONS[@]}"; do
-  bucket_name="tailscale-layers-demo-${region}"
+  bucket_name="tailscale-layers-mv-${region}"
 
   echo "Creating bucket ${bucket_name}..."
 
