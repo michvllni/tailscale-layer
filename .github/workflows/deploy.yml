@@ -1,0 +1,24 @@
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: null
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    environment: aws # create this environment in the github repository settings and add the secrets below
+    env: 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: make tailscale
+      run: make tailscale
+    - name: make upload
+      run: make upload
+    - name: make publish
+      run: make publish
