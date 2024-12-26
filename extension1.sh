@@ -33,7 +33,7 @@ TS_HOSTNAME=${TS_HOSTNAME:-lambda}
 if [ "${AWS_LAMBDA_FUNCTION_VERSION}" != '$LATEST' ]; then
   TS_HOSTNAME="${TS_HOSTNAME}-v${AWS_LAMBDA_FUNCTION_VERSION}"
 fi
-until /opt/bin/tailscale --socket=/tmp/tailscale.sock up --authkey="${TS_KEY}" --hostname="${TS_HOSTNAME}"
+until /opt/bin/tailscale --socket=/tmp/tailscale.sock up --authkey="${TS_KEY}" --hostname="${TS_HOSTNAME}" --accept-routes
 do
   sleep 0.1
 done
@@ -48,9 +48,14 @@ do
   echo "[${LAMBDA_EXTENSION_NAME}] Event received. Processing..."  1>&2;
   EVENT_DATA=$(<$TMPFILE)
   echo $EVENT_DATA 1>&2;
-  echo "[${LAMBDA_EXTENSION_NAME}] Calling tailscale down..."  1>&2;
-  /opt/bin/tailscale --socket=/tmp/tailscale.sock down
-  echo "[${LAMBDA_EXTENSION_NAME}] Sending term to ${TAILSCALED_PID}..."  1>&2;
-  kill -TERM "$TAILSCALED_PID" 2>/dev/null
-  exit 0
+
+  if [[ $EVENT_DATA == *"SHUTDOWN"* ]]; then
+    echo "[${LAMBDA_EXTENSION_NAME}] SHUTDOWN event received. Exiting..."  1>&2;
+    echo "[${LAMBDA_EXTENSION_NAME}] Calling tailscale down..."  1>&2;
+    /opt/bin/tailscale --socket=/tmp/tailscale.sock down
+    echo "[${LAMBDA_EXTENSION_NAME}] Sending term to ${TAILSCALED_PID}..."  1>&2;
+    kill -TERM "$TAILSCALED_PID" 2>/dev/null
+    exit 0
+  fi
+  sleep 1
 done
