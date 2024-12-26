@@ -24,7 +24,7 @@ echo "[${LAMBDA_EXTENSION_NAME}] Registration response: ${RESPONSE} with EXTENSI
 echo "[${LAMBDA_EXTENSION_NAME}] Tailscale process..." 1>&2;
 /opt/bin/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --socket=/tmp/tailscale.sock --state=/tmp/tailscale &
 TAILSCALED_PID=$!
-echo "[${LAMBDA_EXTENSION_NAME}] TAILSCALED_PID: ${TAILSCALED_PID}" 1>&2;
+echo "[${LlambdaAMBDA_EXTENSION_NAME}] TAILSCALED_PID: ${TAILSCALED_PID}" 1>&2;
 sleep 1
 
 # Tailscale up
@@ -47,7 +47,7 @@ do
   curl -sS -L -XGET "http://${AWS_LAMBDA_RUNTIME_API}/2020-01-01/extension/event/next" --header "Lambda-Extension-Identifier: ${EXTENSION_ID}" > $TMPFILE
   echo "[${LAMBDA_EXTENSION_NAME}] Event received. Processing..."  1>&2;
   EVENT_DATA=$(<$TMPFILE)
-  cat $EVENT_DATA 1>&2;
+  echo $EVENT_DATA 1>&2;
   echo "[${LAMBDA_EXTENSION_NAME}] Calling tailscale down..."  1>&2;
   /opt/bin/tailscale --socket=/tmp/tailscale.sock down
   echo "[${LAMBDA_EXTENSION_NAME}] Sending term to ${TAILSCALED_PID}..."  1>&2;
