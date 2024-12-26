@@ -24,7 +24,7 @@ echo "[${LAMBDA_EXTENSION_NAME}] Registration response: ${RESPONSE} with EXTENSI
 echo "[${LAMBDA_EXTENSION_NAME}] Tailscale process..." 1>&2;
 /opt/bin/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --socket=/tmp/tailscale.sock --state=/tmp/tailscale &
 TAILSCALED_PID=$!
-echo "[${LlambdaAMBDA_EXTENSION_NAME}] TAILSCALED_PID: ${TAILSCALED_PID}" 1>&2;
+echo "[${LAMBDA_EXTENSION_NAME}] TAILSCALED_PID: ${TAILSCALED_PID}" 1>&2;
 sleep 1
 
 # Tailscale up
