@@ -39,12 +39,6 @@ do
 done
 sleep 1
 
-# if LONG_LIVED_ACCESS_TOKEN is set, use it to curl HA
-echo "[${LAMBDA_EXTENSION_NAME}] BASE_URL: ${BASE_URL}" 1>&2;
-if [ -n "${LONG_LIVED_ACCESS_TOKEN}" ]; then
-  echo "[${LAMBDA_EXTENSION_NAME}] Testing homeassistant connection..." 1>&2;
-  curl -sS -L -XGET "${BASE_URL}/api/" --header "Authorization: Bearer ${LONG_LIVED_ACCESS_TOKEN}" -x http://127.0.0.1:1055
-fi
 # Waiting for SHUTDOWN event.
 while true
 do
