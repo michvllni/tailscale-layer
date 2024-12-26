@@ -22,7 +22,7 @@ echo "[${LAMBDA_EXTENSION_NAME}] Registration response: ${RESPONSE} with EXTENSI
 
 # Start the Tailscale process
 echo "[${LAMBDA_EXTENSION_NAME}] Tailscale process..." 1>&2;
-/opt/bin/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --socket=/tmp/tailscale.sock --state=/tmp/tailscale &
+/opt/bin/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --outbound-http-proxy-listen=localhost:1055 --socket=/tmp/tailscale.sock --state=/tmp/tailscale &
 TAILSCALED_PID=$!
 echo "[${LAMBDA_EXTENSION_NAME}] TAILSCALED_PID: ${TAILSCALED_PID}" 1>&2;
 sleep 1
@@ -43,8 +43,7 @@ sleep 1
 echo "[${LAMBDA_EXTENSION_NAME}] BASE_URL: ${BASE_URL}" 1>&2;
 if [ -n "${LONG_LIVED_ACCESS_TOKEN}" ]; then
   echo "[${LAMBDA_EXTENSION_NAME}] Testing homeassistant connection..." 1>&2;
-  curl -sS -L -XGET "${BASE_URL}/api/" --header "Authorization: Bearer ${LONG_LIVED_ACCESS_TOKEN}" -x socks5://127.0.0.1:1055 > $TMPFILE
-  echo "[${LAMBDA_EXTENSION_NAME}] Homeassistant connection test response: $(<$TMPFILE)" 1>&2;
+  curl -sS -L -XGET "${BASE_URL}/api/" --header "Authorization: Bearer ${LONG_LIVED_ACCESS_TOKEN}" -x http://127.0.0.1:1055
 fi
 # Waiting for SHUTDOWN event.
 while true
