@@ -22,7 +22,7 @@ echo "[${LAMBDA_EXTENSION_NAME}] Registration response: ${RESPONSE} with EXTENSI
 
 # Start the Tailscale process
 echo "[${LAMBDA_EXTENSION_NAME}] Tailscale process..." 1>&2;
-sudo /opt/bin/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --outbound-http-proxy-listen=localhost:1055 --socket=/tmp/tailscale.sock --state=/tmp/tailscale &
+/opt/bin/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --outbound-http-proxy-listen=localhost:1055 --socket=/tmp/tailscale.sock --state=/tmp/tailscale &
 TAILSCALED_PID=$!
 echo "[${LAMBDA_EXTENSION_NAME}] TAILSCALED_PID: ${TAILSCALED_PID}" 1>&2;
 sleep 1
@@ -33,7 +33,7 @@ TS_HOSTNAME=${TS_HOSTNAME:-lambda}
 if [ "${AWS_LAMBDA_FUNCTION_VERSION}" != '$LATEST' ]; then
   TS_HOSTNAME="${TS_HOSTNAME}-v${AWS_LAMBDA_FUNCTION_VERSION}"
 fi
-until sudo /opt/bin/tailscale --socket=/tmp/tailscale.sock up --authkey="${TS_KEY}" --hostname="${TS_HOSTNAME}" --accept-routes
+until /opt/bin/tailscale --socket=/tmp/tailscale.sock up --authkey="${TS_KEY}" --hostname="${TS_HOSTNAME}" --accept-routes
 do
   sleep 0.1
 done
@@ -52,9 +52,9 @@ do
   if [[ $EVENT_DATA == *"SHUTDOWN"* ]]; then
     echo "[${LAMBDA_EXTENSION_NAME}] SHUTDOWN event received. Exiting..."  1>&2;
     echo "[${LAMBDA_EXTENSION_NAME}] Calling tailscale down..."  1>&2;
-    sudo /opt/bin/tailscale --socket=/tmp/tailscale.sock down
+    /opt/bin/tailscale --socket=/tmp/tailscale.sock down
     echo "[${LAMBDA_EXTENSION_NAME}] Sending term to ${TAILSCALED_PID}..."  1>&2;
-    sudo kill -TERM "$TAILSCALED_PID" 2>/dev/null
+    kill -TERM "$TAILSCALED_PID" 2>/dev/null
     exit 0
   fi
   sleep 1
